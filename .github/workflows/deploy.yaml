@@ -3,7 +3,7 @@ name: CI/CD hello-world
 on:
   push:
     branches:
-    - '**'
+      - '**'
 
 jobs:
   build:
