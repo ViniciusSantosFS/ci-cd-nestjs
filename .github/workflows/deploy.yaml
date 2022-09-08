@@ -56,7 +56,7 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_KEY }}
         envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG
-        scrpit: |
+        script: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker stop nest-app || true && docker rm nest-app || true
           docker run --rm -d -p 3000:3000 --name nest-app $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
