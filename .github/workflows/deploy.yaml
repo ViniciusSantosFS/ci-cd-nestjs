@@ -12,49 +12,49 @@ jobs:
 
   steps:
 
-    - name: Checkout Code
-      uses: actions/checkout@v2
+  - name: Checkout Code
+    uses: actions/checkout@v2
 
-    - name: Create env file
-      run: |
-        touch .env
-        echo PORT=${{ secrets.PORT }} >> env
-        cat .env
-
-    - name: Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Login to ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Build image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: nest-app
-        IMAGE_TAG: ${{ github.sha }}
-
+  - name: Create env file
     run: |
-      docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      echo "Buildado $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      touch .env
+      echo PORT=${{ secrets.PORT }} >> env
+      cat .env
 
-    - name: Deploy to EC2
-      uses: appleboy@ssh-action@master
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: nest-app
-        IMAGE_TAG: ${{ github.sha }}
-      with:
-        host: ${{ secrets.AWS_HOST }}
-        username: ${{ secrets.AWS_USER }}
-        key: ${{ secrets.AWS_KEY }}
-      envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG
-        scrpit: |
-        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker stop nest-app || true && docker rm nest-app || true
-        docker run --rm -d -p 3000:3000 --name nest-app $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  - name: Credentials
+    uses: aws-actions/configure-aws-credentials@v1
+    with:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-region: ${{ secrets.AWS_REGION }}
+
+  - name: Login to ECR
+    id: login-ecr
+    uses: aws-actions/amazon-ecr-login@v1
+
+  - name: Build image
+    env:
+      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ECR_REPOSITORY: nest-app
+      IMAGE_TAG: ${{ github.sha }}
+
+  run: |
+    docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    echo "Buildado $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  - name: Deploy to EC2
+    uses: appleboy@ssh-action@master
+    env:
+      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ECR_REPOSITORY: nest-app
+      IMAGE_TAG: ${{ github.sha }}
+    with:
+      host: ${{ secrets.AWS_HOST }}
+      username: ${{ secrets.AWS_USER }}
+      key: ${{ secrets.AWS_KEY }}
+    envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG
+      scrpit: |
+      docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      docker stop nest-app || true && docker rm nest-app || true
+      docker run --rm -d -p 3000:3000 --name nest-app $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
