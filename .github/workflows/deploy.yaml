@@ -3,7 +3,7 @@ name: CI/CD hello-world
 on:
   push:
     branches:
-      - '**'
+      - main
 
 jobs:
   build:
@@ -39,9 +39,9 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
 
   run: |
-    docker build -t ${{ secrets.DOCKER_IMAGE }} .
-    docker push ${{ secrets.DOCKER_IMAGE }}
-    echo "Buildado ${{ secrets.DOCKER_IMAGE }}"
+    docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    echo "Buildado $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   - name: Deploy to EC2
     uses: appleboy@ssh-action@master
@@ -55,6 +55,6 @@ jobs:
       key: ${{ secrets.AWS_KEY }}
     envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG
       scrpit: |
-      docker pull ${{ secrets.DOCKER_IMAGE }}
+      docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       docker stop nest-app || true && docker rm nest-app || true
-      docker run --rm -d -p 3000:3000 --name nest-app ${{ secrets.DOCKER_IMAGE }}
+      docker run --rm -d -p 3000:3000 --name nest-app $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
