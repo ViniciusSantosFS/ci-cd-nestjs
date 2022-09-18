@@ -3,9 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SentryModule } from './sentry/sentry.module';
 
 @Module({
   imports: [
+    SentryModule,
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'mysql',
