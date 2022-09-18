@@ -1,4 +1,4 @@
-name: CI/CD hello-world
+name: Deploy ecr hello world
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: CI/CD hello-world
+name: Sentry hello-world
 
 on:
   push:
@@ -18,5 +18,5 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        whit:
+        with:
           environment: production
