@@ -10,12 +10,13 @@ jobs:
     name: Config Sentry
     runs-on: ubuntu-latest
 
-- uses: actions/checkout@v2
-- name: Hello World Sentry
-  uses: getsentry/action-release@v1
-  env:
-    SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-    SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-  whit:
-    environment: production
+    steps:
+      - uses: actions/checkout@v2
+      - name: Hello World Sentry
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        whit:
+          environment: production
