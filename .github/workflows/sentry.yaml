@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  integrate-with-sentry:
     name: Config Sentry
     runs-on: ubuntu-latest
 
